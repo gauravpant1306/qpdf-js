@@ -99,13 +99,13 @@ Qpdf.decrypt = function({exePath="",input, password}, callback) {
   args.push('-');
 
   // Execute command and return stdout for pipe
-  var outputStream = executeCommand(args, callback);
+  var outputStream = executeCommand(exePath,args, callback);
   if (outputStream) {
     return outputStream;
   }
 };
 
-function executeCommand(args, callback) {
+function executeCommand(exePath,args, callback) {
   var child;
 
   var output = args[args.length - 1];
