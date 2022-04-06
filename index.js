@@ -83,7 +83,7 @@ Qpdf.encrypt = function(input, options, callback) {
   }
 };
 
-Qpdf.decrypt = function(input, password, callback) {
+Qpdf.decrypt = function({exePath="",input, password}, callback) {
   if (!input) return handleError(new Error('Specify input file'), callback);
   if (!password) return handleError(new Error('Password missing'), callback);
 
@@ -112,7 +112,11 @@ function executeCommand(args, callback) {
 
   // if on windows or not piping to stdout
   if (process.platform === 'win32' || output !== '-') {
-    child = spawn(args[0], args.slice(1));
+    if(exePath)
+    {child = spawn(exePath,args.slice(1));}
+    else
+    {
+    child = spawn(args[0], args.slice(1));}
   } else {
     // this nasty business prevents piping problems on linux
     child = spawn('/bin/sh', ['-c', args.join(' ') + ' | cat']);
