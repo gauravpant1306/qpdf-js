@@ -1,5 +1,5 @@
 {
-  "name": "node-qpdf",
+  "name": "qpdf-wrapper",
   "version": "1.0.3",
   "description": "A Content Preserving transformations on PDFs wrapped around QPDF",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nrhirani/node-qpdf.git"
+    "url": "git+https://github.com/gauravpant1306/qpdf-js.git"
   },
   "keywords": [
     "pdf",
