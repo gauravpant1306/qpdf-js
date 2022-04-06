@@ -83,7 +83,7 @@ Qpdf.encrypt = function(input, options, callback) {
   }
 };
 
-Qpdf.decrypt = function({exePath,input, password}, callback) {
+Qpdf.decrypt = function({exePath,input, password,outputPath}, callback) {
   if (!input) return handleError(new Error('Specify input file'), callback);
   if (!password) return handleError(new Error('Password missing'), callback);
 
@@ -96,16 +96,23 @@ Qpdf.decrypt = function({exePath,input, password}, callback) {
   args.push(input);
 
   // Print PDf on stdout
-  args.push('-');
+  if(outputPath)
+  {args.push(outputPath);}
+  else
+  {args.push('-');}
 
   // Execute command and return stdout for pipe
   var outputStream = executeCommand(exePath,args, callback);
   if (outputStream) {
-    return outputStream;
+    if(outputPath)
+    {
+      return outputPath;
+    }
+    else{return outputStream;}
   }
 };
 
-function executeCommand(exePath,args, callback) {
+function executeCommand(exePath, args, callback) {
   var child;
 
   var output = args[args.length - 1];
