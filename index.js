@@ -1,9 +1,9 @@
-var spawn  = require('child_process').spawn;
+var {spawn,exec}  = require('child_process');
 var stream = require('stream');
 
 var Qpdf = {};
 
-Qpdf.encrypt = function(input, options, callback) {
+Qpdf.encrypt = async function(input, options, callback) {
   if (!input) return handleError(new Error('Specify input file'));
   if(options && options.outputFile) {
     if(typeof options.outputFile != 'string' || options.outputFile === input) {
@@ -58,7 +58,7 @@ Qpdf.encrypt = function(input, options, callback) {
   }
   // Execute command and return stdout for pipe
   if (!options.outputFile) {
-    var outputStream = executeCommand(args);
+    var outputStream =await  executeCommand(args);
     if (outputStream) {
       if (callback) {
         return callback(null, outputStream);
@@ -83,7 +83,7 @@ Qpdf.encrypt = function(input, options, callback) {
   }
 };
 
-Qpdf.decrypt = function({exePath,input, password,outputPath}, callback) {
+Qpdf.decrypt = async function({exePath,input, password,outputPath,waitForExit=false}, callback) {
   if (!input) return handleError(new Error('Specify input file'), callback);
   if (!password) return handleError(new Error('Password missing'), callback);
 
@@ -102,7 +102,7 @@ Qpdf.decrypt = function({exePath,input, password,outputPath}, callback) {
   {args.push('-');}
 
   // Execute command and return stdout for pipe
-  var outputStream = executeCommand(exePath,args, callback);
+  var outputStream = await executeCommand(exePath,args,waitForExit, callback);
   if (outputStream) {
     if(outputPath)
     {
@@ -112,7 +112,7 @@ Qpdf.decrypt = function({exePath,input, password,outputPath}, callback) {
   }
 };
 
-function executeCommand(exePath, args, callback) {
+async function executeCommand(exePath, args,waitForExit, callback) {
   var child;
 
   var output = args[args.length - 1];
@@ -120,10 +120,10 @@ function executeCommand(exePath, args, callback) {
   // if on windows or not piping to stdout
   if (process.platform === 'win32' || output !== '-') {
     if(exePath)
-    {child = spawn(exePath,args.slice(1));}
+    {child = spawn(exePath,args.slice(1).join(" "), {shell: process.platform == 'win32'});}
     else
     {
-    child = spawn(args[0], args.slice(1));}
+    child = await exec( args.join(' '));}
   } else {
     // this nasty business prevents piping problems on linux
     child = spawn('/bin/sh', ['-c', args.join(' ') + ' | cat']);
@@ -133,6 +133,13 @@ function executeCommand(exePath, args, callback) {
   if (callback) {
     child.on('exit', function() { callback(null, output); });
   }
+else{
+  if(waitForExit){
+    child.on("exit", function() {
+      console.log("exit");
+    })
+  }
+}
 
   var outputStream = child.stdout;
 
