@@ -187,3 +187,4 @@ function hyphenate(variable) {
 
 Qpdf.command = 'qpdf';
 module.exports = Qpdf;
+ 
