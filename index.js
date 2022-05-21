@@ -118,7 +118,7 @@ async function executeCommand(exePath, args,waitForExit, callback) {
   var output = args[args.length - 1];
 
   // if on windows or not piping to stdout
-  if (process.platform === 'win32' || output !== '-') {
+  if (process.platform === 'win32') {
     if(exePath)
     {child = spawn(exePath,args.slice(1).join(" "), {shell: process.platform == 'win32'});}
     else
